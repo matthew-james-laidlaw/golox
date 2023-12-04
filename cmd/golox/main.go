@@ -1,27 +1,56 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"golox/pkg/expression"
 	"golox/pkg/parser"
+	"log"
+	"os"
 )
 
-func main() {
+type Lox struct {
+}
 
-	left := expression.Literal{Value: float32(40.0)}
+func (l *Lox) Main(args []string) {
+	if len(args) > 2 {
+		log.Fatalln("usage: golox [script]")
+	} else if len(args) == 2 {
+		l.RunFile(args[1])
+	} else {
+		l.RunPrompt()
+	}
+}
 
-	right := expression.Literal{Value: float32(2.0)}
-
-	binary := expression.Binary{
-		Operation: parser.Token{Lexeme: "+"},
-		Left:      left,
-		Right:     right,
+func (l *Lox) RunFile(path string) {
+	bytes, err := os.ReadFile(path)
+	if err != nil {
+		log.Fatalln(err)
 	}
 
-	interpreter := NewInterpreter()
+	l.Run(string(bytes))
+}
 
-	result := binary.Accept(interpreter)
+func (l *Lox) RunPrompt() {
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Print("> ")
+		line, err := reader.ReadString('\n')
+		if err != nil {
+			log.Fatalln(err)
+		}
+		l.Run(line)
+	}
+}
 
-	fmt.Println(result)
+func (l *Lox) Run(source string) {
+	scanner := parser.NewScanner(source)
+	tokens := scanner.ScanTokens()
+	for token, _ := range tokens {
+		fmt.Printf("%+v\n", token)
+	}
+}
 
+func main() {
+	lox := Lox{}
+	lox.Main(os.Args)
 }

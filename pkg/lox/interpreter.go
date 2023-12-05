@@ -28,6 +28,14 @@ func (i Interpreter) VisitBinary(expr *Binary) interface{} {
 		return expr.Left.Accept(i).(float32) * expr.Right.Accept(i).(float32)
 	case "/":
 		return expr.Left.Accept(i).(float32) / expr.Right.Accept(i).(float32)
+	case ">":
+		return expr.Left.Accept(i).(float32) > expr.Right.Accept(i).(float32)
+	case ">=":
+		return expr.Left.Accept(i).(float32) >= expr.Right.Accept(i).(float32)
+	case "<":
+		return expr.Left.Accept(i).(float32) < expr.Right.Accept(i).(float32)
+	case "<=":
+		return expr.Left.Accept(i).(float32) <= expr.Right.Accept(i).(float32)
 	}
 	return nil
 }
@@ -52,8 +60,19 @@ func (i Interpreter) VisitLiteral(expr *Literal) interface{} {
 }
 
 func (i Interpreter) VisitLogical(expr *Logical) interface{} {
-	//TODO implement me
-	panic("implement me")
+	left := expr.Left.Accept(i)
+
+	if expr.Operation.Type == OR {
+		if IsTruthy(left) {
+			return left
+		}
+	} else {
+		if !IsTruthy(left) {
+			return left
+		}
+	}
+
+	return expr.Right.Accept(i)
 }
 
 func (i Interpreter) VisitSet(expr *Set) interface{} {
@@ -103,8 +122,12 @@ func (i Interpreter) VisitFunction(stmt *Function) interface{} {
 }
 
 func (i Interpreter) VisitIf(stmt *If) interface{} {
-	//TODO implement me
-	panic("implement me")
+	if IsTruthy(stmt.Condition.Accept(i)) {
+		stmt.ThenBranch.Accept(i)
+	} else if stmt.ElseBranch != nil {
+		stmt.ElseBranch.Accept(i)
+	}
+	return nil
 }
 
 func (i Interpreter) VisitPrint(stmt *Print) interface{} {
@@ -127,7 +150,7 @@ func (i Interpreter) VisitVar(stmt *Var) interface{} {
 }
 
 func (i Interpreter) VisitWhile(stmt *While) interface{} {
-	for stmt.Condition.Accept(i).(bool) == true {
+	for IsTruthy(stmt.Condition.Accept(i)) {
 		stmt.Body.Accept(i)
 	}
 	return nil

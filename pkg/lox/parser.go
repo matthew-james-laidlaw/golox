@@ -40,8 +40,14 @@ func (p *Parser) ParseVarDeclaration() Statement {
 }
 
 func (p *Parser) ParseStatement() Statement {
+	if p.Match(IF) {
+		return p.ParseIfStatement()
+	}
 	if p.Match(PRINT) {
 		return p.ParsePrintStatement()
+	}
+	if p.Match(WHILE) {
+		return p.ParseWhileStatement()
 	}
 	if p.Match(LEFT_BRACE) {
 		return Block{p.ParseBlock()}
@@ -51,6 +57,30 @@ func (p *Parser) ParseStatement() Statement {
 	}
 
 	return p.ParseExpressionStatement()
+}
+
+func (p *Parser) ParseWhileStatement() Statement {
+	p.Consume(LEFT_PAREN, "expect '(' after 'while'")
+	condition := p.ParseExpression()
+	p.Consume(RIGHT_PAREN, "expect ')' after while condition")
+	body := p.ParseStatement()
+
+	return While{condition, body}
+}
+
+func (p *Parser) ParseIfStatement() Statement {
+	p.Consume(LEFT_PAREN, "expect '(' after 'if'")
+	condition := p.ParseExpression()
+	p.Consume(RIGHT_PAREN, "expect ')' after if condition")
+
+	thenBranch := p.ParseStatement()
+	var elseBranch Statement
+
+	if p.Match(ELSE) {
+		elseBranch = p.ParseStatement()
+	}
+
+	return If{condition, thenBranch, elseBranch}
 }
 
 func (p *Parser) ParseForStatement() Statement {
@@ -122,7 +152,7 @@ func (p *Parser) ParseExpression() Expression {
 }
 
 func (p *Parser) ParseAssignment() Expression {
-	expr := p.ParseEquality()
+	expr := p.ParseOr()
 
 	if p.Match(EQUAL) {
 		value := p.ParseAssignment()
@@ -133,6 +163,30 @@ func (p *Parser) ParseAssignment() Expression {
 		}
 
 		panic("invalid assignment target")
+	}
+
+	return expr
+}
+
+func (p *Parser) ParseOr() Statement {
+	expr := p.ParseAnd()
+
+	for p.Match(OR) {
+		operator := p.Previous()
+		right := p.ParseAnd()
+		expr = Logical{operator, expr, right}
+	}
+
+	return expr
+}
+
+func (p *Parser) ParseAnd() Statement {
+	expr := p.ParseEquality()
+
+	for p.Match(AND) {
+		operator := p.Previous()
+		right := p.ParseEquality()
+		expr = Logical{operator, expr, right}
 	}
 
 	return expr

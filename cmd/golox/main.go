@@ -3,12 +3,19 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"golox/pkg/parser"
+	"golox/pkg/lox"
 	"log"
 	"os"
 )
 
 type Lox struct {
+	Interpreter *lox.Interpreter
+}
+
+func NewLox() *Lox {
+	return &Lox{
+		Interpreter: lox.NewInterpreter(),
+	}
 }
 
 func (l *Lox) Main(args []string) {
@@ -43,14 +50,18 @@ func (l *Lox) RunPrompt() {
 }
 
 func (l *Lox) Run(source string) {
-	scanner := parser.NewScanner(source)
+	scanner := lox.NewScanner(source)
 	tokens := scanner.ScanTokens()
-	for token, _ := range tokens {
-		fmt.Printf("%+v\n", token)
+
+	tokenParser := lox.NewParser(tokens)
+	statements := tokenParser.Parse()
+
+	for _, statement := range statements {
+		statement.Accept(l.Interpreter)
 	}
 }
 
 func main() {
-	lox := Lox{}
+	lox := NewLox()
 	lox.Main(os.Args)
 }

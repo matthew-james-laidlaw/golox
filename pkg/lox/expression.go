@@ -1,13 +1,11 @@
-package expression
-
-import "golox/pkg/parser"
+package lox
 
 type Expression interface {
 	Accept(v Visitor) interface{}
 }
 
 type Assignment struct {
-	Name  parser.Token
+	Name  Token
 	Value Expression
 }
 
@@ -16,7 +14,7 @@ func (expr Assignment) Accept(v Visitor) interface{} {
 }
 
 type Binary struct {
-	Operation parser.Token
+	Operation Token
 	Left      Expression
 	Right     Expression
 }
@@ -57,7 +55,7 @@ func (expr Literal) Accept(v Visitor) interface{} {
 }
 
 type Logical struct {
-	Operation parser.Token
+	Operation Token
 	Left      Expression
 	Right     Expression
 }
@@ -85,7 +83,7 @@ func (expr This) Accept(v Visitor) interface{} {
 }
 
 type Unary struct {
-	Operation parser.Token
+	Operation Token
 	Operand   Expression
 }
 
@@ -94,7 +92,7 @@ func (expr Unary) Accept(v Visitor) interface{} {
 }
 
 type Variable struct {
-	Name parser.Token
+	Name Token
 }
 
 func (expr Variable) Accept(v Visitor) interface{} {

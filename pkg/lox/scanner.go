@@ -1,4 +1,4 @@
-package parser
+package lox
 
 import (
 	"log"
@@ -78,19 +78,19 @@ func (s *Scanner) ScanToken() {
 		if s.Match('=') {
 			s.AddToken(EQUAL_EQUAL)
 		} else {
-			s.AddToken(BANG)
+			s.AddToken(EQUAL)
 		}
 	case '<':
 		if s.Match('=') {
 			s.AddToken(LESS_EQUAL)
 		} else {
-			s.AddToken(BANG)
+			s.AddToken(LESS)
 		}
 	case '>':
 		if s.Match('=') {
 			s.AddToken(GREATER_EQUAL)
 		} else {
-			s.AddToken(BANG)
+			s.AddToken(GREATER)
 		}
 	case '/':
 		if s.Match('/') {
@@ -184,12 +184,12 @@ func (s *Scanner) ScanNumber() {
 		}
 	}
 
-	value, err := strconv.ParseFloat(s.Source[s.Start:s.Current], 64)
+	value, err := strconv.ParseFloat(s.Source[s.Start:s.Current], 32)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	s.AddTokenWithValue(NUMBER, value)
+	s.AddTokenWithValue(NUMBER, float32(value))
 }
 
 func (s *Scanner) ScanIdentifier() {

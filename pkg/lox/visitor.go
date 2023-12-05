@@ -1,4 +1,4 @@
-package expression
+package lox
 
 type Visitor interface {
 	VisitAssignment(expr *Assignment) interface{}
@@ -13,4 +13,14 @@ type Visitor interface {
 	VisitThis(expr *This) interface{}
 	VisitUnary(expr *Unary) interface{}
 	VisitVariable(expr *Variable) interface{}
+
+	VisitBlock(stmt *Block) interface{}
+	VisitClass(stmt *Class) interface{}
+	VisitExpressionStatement(stmt *ExpressionStatement) interface{}
+	VisitFunction(stmt *Function) interface{}
+	VisitIf(stmt *If) interface{}
+	VisitPrint(stmt *Print) interface{}
+	VisitReturn(stmt *Return) interface{}
+	VisitVar(stmt *Var) interface{}
+	VisitWhile(stmt *While) interface{}
 }

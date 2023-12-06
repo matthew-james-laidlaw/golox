@@ -90,7 +90,7 @@ func (p *Parser) ParseForStatement() Statement {
 	if p.Match(SEMICOLON) {
 		initializer = nil
 	} else if p.Match(VAR) {
-		initializer = p.ParseDeclaration()
+		initializer = p.ParseVarDeclaration()
 	} else {
 		initializer = p.ParseExpressionStatement()
 	}

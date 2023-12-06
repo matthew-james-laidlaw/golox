@@ -1,2 +1,2 @@
 # golox
-An interpreter for the Lox language as described in Robert Nystrom's "Crafting Interpreters".
+An interpreter for the Lox language as described in Robert Nystrom's "Crafting Interpreters". Written in Go.

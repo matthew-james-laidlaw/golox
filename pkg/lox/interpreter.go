@@ -3,18 +3,20 @@ package lox
 import "fmt"
 
 type Interpreter struct {
-	Variables map[string]interface{}
+	Env     *Environment
+	Globals *Environment
 }
 
 func NewInterpreter() *Interpreter {
 	return &Interpreter{
-		Variables: make(map[string]interface{}),
+		Env:     NewEnvironment(nil),
+		Globals: NewEnvironment(nil),
 	}
 }
 
 func (i Interpreter) VisitAssignment(expr *Assignment) interface{} {
 	value := expr.Value.Accept(i)
-	i.Variables[expr.Name.Lexeme] = value
+	i.Env.Assign(expr.Name, value)
 	return value
 }
 
@@ -28,6 +30,10 @@ func (i Interpreter) VisitBinary(expr *Binary) interface{} {
 		return expr.Left.Accept(i).(float32) * expr.Right.Accept(i).(float32)
 	case "/":
 		return expr.Left.Accept(i).(float32) / expr.Right.Accept(i).(float32)
+	case "==":
+		return expr.Left.Accept(i) == expr.Right.Accept(i)
+	case "!=":
+		return expr.Left.Accept(i) != expr.Right.Accept(i)
 	case ">":
 		return expr.Left.Accept(i).(float32) > expr.Right.Accept(i).(float32)
 	case ">=":
@@ -41,8 +47,15 @@ func (i Interpreter) VisitBinary(expr *Binary) interface{} {
 }
 
 func (i Interpreter) VisitCall(expr *Call) interface{} {
-	//TODO implement me
-	panic("implement me")
+	callee := expr.Callee.Accept(i)
+
+	arguments := make([]interface{}, 0)
+	for _, argument := range expr.Arguments {
+		arguments = append(arguments, argument.Accept(i))
+	}
+
+	function := callee.(Callable)
+	return function.Call(i, arguments)
 }
 
 func (i Interpreter) VisitGet(expr *Get) interface{} {
@@ -51,8 +64,7 @@ func (i Interpreter) VisitGet(expr *Get) interface{} {
 }
 
 func (i Interpreter) VisitGrouping(expr *Grouping) interface{} {
-	//TODO implement me
-	panic("implement me")
+	return expr.Expr.Accept(i)
 }
 
 func (i Interpreter) VisitLiteral(expr *Literal) interface{} {
@@ -96,14 +108,23 @@ func (i Interpreter) VisitUnary(expr *Unary) interface{} {
 }
 
 func (i Interpreter) VisitVariable(expr *Variable) interface{} {
-	return i.Variables[expr.Name.Lexeme]
+	return i.Env.Get(expr.Name)
 }
 
 func (i Interpreter) VisitBlock(stmt *Block) interface{} {
-	for _, statement := range stmt.Statements {
+	i.ExecuteBlock(stmt.Statements, NewEnvironment(i.Env))
+	return nil
+}
+
+func (i Interpreter) ExecuteBlock(statements []Statement, environment *Environment) {
+	previous := i.Env
+
+	i.Env = environment
+	for _, statement := range statements {
 		statement.Accept(i)
 	}
-	return nil
+
+	i.Env = previous
 }
 
 func (i Interpreter) VisitClass(stmt *Class) interface{} {
@@ -117,8 +138,9 @@ func (i Interpreter) VisitExpressionStatement(stmt *ExpressionStatement) interfa
 }
 
 func (i Interpreter) VisitFunction(stmt *Function) interface{} {
-	//TODO implement me
-	panic("implement me")
+	function := &LoxFunction{stmt}
+	i.Env.Define(stmt.Name.Lexeme, function)
+	return nil
 }
 
 func (i Interpreter) VisitIf(stmt *If) interface{} {
@@ -145,7 +167,7 @@ func (i Interpreter) VisitVar(stmt *Var) interface{} {
 	if stmt.Initializer != nil {
 		value = stmt.Initializer.Accept(i)
 	}
-	i.Variables[stmt.Name.Lexeme] = value
+	i.Env.Define(stmt.Name.Lexeme, value)
 	return nil
 }
 

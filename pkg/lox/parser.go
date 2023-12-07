@@ -21,10 +21,30 @@ func (p *Parser) Parse() []Statement {
 }
 
 func (p *Parser) ParseDeclaration() Statement {
+	if p.Match(FUN) {
+		return p.ParseFunctionDeclaration()
+	}
 	if p.Match(VAR) {
 		return p.ParseVarDeclaration()
 	}
 	return p.ParseStatement()
+}
+
+func (p *Parser) ParseFunctionDeclaration() Statement {
+	name := p.Consume(IDENTIFIER, "expect function name")
+	p.Consume(LEFT_PAREN, "expect '(' after function name")
+	parameters := make([]Token, 0)
+	if !p.Check(RIGHT_PAREN) {
+		parameters = append(parameters, p.Consume(IDENTIFIER, "expect parameter name"))
+		for p.Match(COMMA) {
+			parameters = append(parameters, p.Consume(IDENTIFIER, "expect parameter name"))
+		}
+	}
+	p.Consume(RIGHT_PAREN, "expect ')' after parameters")
+
+	p.Consume(LEFT_BRACE, "expect '{' before function body")
+	body := p.ParseBlock()
+	return Function{name, parameters, body}
 }
 
 func (p *Parser) ParseVarDeclaration() Statement {
@@ -282,7 +302,36 @@ func (p *Parser) ParseUnary() Expression {
 		right := p.ParseUnary()
 		return Unary{operator, right}
 	}
-	return p.ParsePrimary()
+
+	return p.ParseCall()
+}
+
+func (p *Parser) ParseCall() Expression {
+	expression := p.ParsePrimary()
+
+	for {
+		if p.Match(LEFT_PAREN) {
+			expression = p.FinishCall(expression)
+		} else {
+			break
+		}
+	}
+
+	return expression
+}
+
+func (p *Parser) FinishCall(callee Expression) Expression {
+	arguments := make([]Expression, 0)
+	if !p.Check(RIGHT_PAREN) {
+		arguments = append(arguments, p.ParseExpression())
+		for p.Match(COMMA) {
+			arguments = append(arguments, p.ParseExpression())
+		}
+	}
+
+	_ = p.Consume(RIGHT_PAREN, "expect ')' after arguments")
+
+	return Call{callee, arguments}
 }
 
 func (p *Parser) ParsePrimary() Expression {

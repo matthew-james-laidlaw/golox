@@ -66,6 +66,9 @@ func (p *Parser) ParseStatement() Statement {
 	if p.Match(PRINT) {
 		return p.ParsePrintStatement()
 	}
+	if p.Match(RETURN) {
+		return p.ParseReturn()
+	}
 	if p.Match(WHILE) {
 		return p.ParseWhileStatement()
 	}
@@ -77,6 +80,16 @@ func (p *Parser) ParseStatement() Statement {
 	}
 
 	return p.ParseExpressionStatement()
+}
+
+func (p *Parser) ParseReturn() Statement {
+	_ = p.Previous()
+	var value Expression
+	if !p.Check(SEMICOLON) {
+		value = p.ParseExpression()
+	}
+	p.Consume(SEMICOLON, "expected ';' after return value")
+	return Return{value}
 }
 
 func (p *Parser) ParseWhileStatement() Statement {

@@ -8,10 +8,9 @@ I developed this application as an exercise in learning how programming language
 This application can parse the [Lox grammar](https://craftinginterpreters.com/appendix-i.html) into an [abstract syntax tree](https://craftinginterpreters.com/appendix-ii.html) and implements a tree-walk interpreter to execute Lox programs.
 The tool has two modes of operation. If passed a filename, it will execute code written in that file. If nothing is passed in, the tool drives an interactive REPL.
 
-# Build & Test
+# Test
 
 ```
-> go build golox/cmd/golox
 > go test -v golox/pkg/lox
 ```
 

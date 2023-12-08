@@ -1,4 +1,6 @@
 # GoLox
+![Unit Tests](https://github.com/matthew-james-laidlaw/golox/actions/workflows/test.yml/badge.svg)
+
 An interpreter for the Lox language as described in Robert Nystrom's [Crafting Interpreters](https://craftinginterpreters.com/). Written in Go.
 
 # Purpose

@@ -157,9 +157,16 @@ func (i Interpreter) VisitPrint(stmt *Print) interface{} {
 	return nil
 }
 
+type ReturnValue struct {
+	Value interface{}
+}
+
 func (i Interpreter) VisitReturn(stmt *Return) interface{} {
-	//TODO implement me
-	panic("implement me")
+	var value interface{}
+	if stmt.Value != nil {
+		value = stmt.Value.Accept(i)
+	}
+	panic(ReturnValue{value})
 }
 
 func (i Interpreter) VisitVar(stmt *Var) interface{} {

@@ -77,7 +77,7 @@ Hello, World!
 
 ###### Iterative Fibonacci
 A terrible iterative algorithm for calculating fibonacci numbers. This implementation of Lox does not yet support returning from functions.
-Thus, recursion is impossible and I must use this as a proxy. This program will print out the 10th fibonacci numbner, or it can be changed to print any other fibonacci number by invoking the `Fibonacci` function with a different argument.
+Thus, recursion is impossible and I must use this as a proxy. This program will print out the 10th fibonacci number, or it can be changed to print any other fibonacci number by invoking the `Fibonacci` function with a different argument.
 ```
 // prog.lox
 fun Fibonacci(n) {

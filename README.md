@@ -75,25 +75,39 @@ Hello, World!
 
 # Examples
 
-###### Iterative Fibonacci
-A terrible iterative algorithm for calculating fibonacci numbers. This implementation of Lox does not yet support returning from functions.
-Thus, recursion is impossible and I must use this as a proxy. This program will print out the 10th fibonacci number, or it can be changed to print any other fibonacci number by invoking the `Fibonacci` function with a different argument.
+###### Fibonacci
+This program defines a recursive function that can calculate fibonacci numbers and uses it to print the first twenty fibonacci values. 
 ```
 // prog.lox
-fun Fibonacci(n) {
-  var a = 0;
-  var b = 1;
-  for (var i = 1; i < n; i = i + 1) {
-    var temp = a + b;
-    a = b;
-    b = temp;  
-  }
-  print b;
+fun fib(n) {
+  if (n <= 1) return n;
+  return fib(n - 2) + fib(n - 1);
 }
 
-Fibonacci(10);
+for (var i = 0; i < 20; i = i + 1) {
+  print fib(i);
+}
 ```
 ```
 > go run golox/cmd/golox "path/to/prog.lox"
+0
+1
+1
+2
+3
+5
+8
+13
+21
+34
 55
+89
+144
+233
+377
+610
+987
+1597
+2584
+4181
 ```

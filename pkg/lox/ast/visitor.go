@@ -1,4 +1,4 @@
-package lox
+package ast
 
 type Visitor interface {
 	VisitAssignment(expr *Assignment) interface{}

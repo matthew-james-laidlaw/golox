@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"golox/pkg/lox"
+	"golox/pkg/lox/parser"
 	"log"
 	"os"
 )
@@ -53,7 +54,7 @@ func (l *Lox) Run(source string) {
 	scanner := lox.NewScanner(source)
 	tokens := scanner.ScanTokens()
 
-	tokenParser := lox.NewParser(tokens)
+	tokenParser := parser.NewParser(tokens)
 	statements := tokenParser.Parse()
 
 	for _, statement := range statements {

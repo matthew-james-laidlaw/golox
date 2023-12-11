@@ -1,4 +1,8 @@
-package lox
+package ast
+
+import (
+	"golox/pkg/lox/token"
+)
 
 type Statement interface {
 	Accept(v Visitor) interface{}
@@ -30,8 +34,8 @@ func (stmt ExpressionStatement) Accept(v Visitor) interface{} {
 }
 
 type Function struct {
-	Name   Token
-	Params []Token
+	Name   token.Token
+	Params []token.Token
 	Body   []Statement
 }
 
@@ -66,7 +70,7 @@ func (stmt Return) Accept(v Visitor) interface{} {
 }
 
 type Var struct {
-	Name        Token
+	Name        token.Token
 	Initializer Expression
 }
 

@@ -1,5 +1,7 @@
 package lox
 
+import "golox/pkg/lox/token"
+
 type Environment struct {
 	Values    map[string]interface{}
 	Enclosing *Environment
@@ -12,7 +14,7 @@ func NewEnvironment(enclosing *Environment) *Environment {
 	}
 }
 
-func (e *Environment) Assign(name Token, value interface{}) {
+func (e *Environment) Assign(name token.Token, value interface{}) {
 	_, ok := e.Values[name.Lexeme]
 
 	if ok {
@@ -28,7 +30,7 @@ func (e *Environment) Define(name string, value interface{}) {
 	e.Values[name] = value
 }
 
-func (e *Environment) Get(name Token) interface{} {
+func (e *Environment) Get(name token.Token) interface{} {
 	value, ok := e.Values[name.Lexeme]
 	if ok {
 		return value

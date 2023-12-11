@@ -5,6 +5,11 @@ import (
 	"golox/pkg/lox/token"
 )
 
+func Parse(tokens []token.Token) []ast.Statement {
+	parser := NewParser(tokens)
+	return parser.Parse()
+}
+
 type Parser struct {
 	Tokens  []token.Token
 	Current int

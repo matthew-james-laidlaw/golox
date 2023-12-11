@@ -1,4 +1,4 @@
-package lox
+package interpreter
 
 type Boolean = bool
 type Number = float32

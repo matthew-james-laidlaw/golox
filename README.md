@@ -73,6 +73,14 @@ Good!
 Hello, World!
 ```
 
+###### Returns
+```
+> fun Foo() { return 42; }
+> var n = Foo();
+> print n;
+42
+```
+
 # Examples
 
 ###### Fibonacci

@@ -1,4 +1,4 @@
-package lox
+package token
 
 import "fmt"
 
@@ -53,7 +53,7 @@ type Token struct {
 	Line    int
 }
 
-var keywords = map[string]TokenType{
+var Keywords = map[string]TokenType{
 	"and":    AND,
 	"class":  CLASS,
 	"else":   ELSE,

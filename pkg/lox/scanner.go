@@ -1,13 +1,14 @@
 package lox
 
 import (
+	"golox/pkg/lox/token"
 	"log"
 	"strconv"
 )
 
 type Scanner struct {
 	Source  string
-	Tokens  []Token
+	Tokens  []token.Token
 	Start   int
 	Current int
 	Line    int
@@ -16,21 +17,21 @@ type Scanner struct {
 func NewScanner(source string) *Scanner {
 	return &Scanner{
 		Source:  source,
-		Tokens:  make([]Token, 0),
+		Tokens:  make([]token.Token, 0),
 		Start:   0,
 		Current: 0,
 		Line:    1,
 	}
 }
 
-func (s *Scanner) ScanTokens() []Token {
+func (s *Scanner) ScanTokens() []token.Token {
 	for !s.IsAtEnd() {
 		s.Start = s.Current
 		s.ScanToken()
 	}
 
-	eof := Token{
-		Type:    EOF,
+	eof := token.Token{
+		Type:    token.EOF,
 		Lexeme:  "",
 		Literal: nil,
 		Line:    s.Line,
@@ -49,48 +50,48 @@ func (s *Scanner) ScanToken() {
 	c := s.Advance()
 	switch c {
 	case '(':
-		s.AddToken(LEFT_PAREN)
+		s.AddToken(token.LEFT_PAREN)
 	case ')':
-		s.AddToken(RIGHT_PAREN)
+		s.AddToken(token.RIGHT_PAREN)
 	case '{':
-		s.AddToken(LEFT_BRACE)
+		s.AddToken(token.LEFT_BRACE)
 	case '}':
-		s.AddToken(RIGHT_BRACE)
+		s.AddToken(token.RIGHT_BRACE)
 	case ',':
-		s.AddToken(COMMA)
+		s.AddToken(token.COMMA)
 	case '.':
-		s.AddToken(DOT)
+		s.AddToken(token.DOT)
 	case '-':
-		s.AddToken(MINUS)
+		s.AddToken(token.MINUS)
 	case '+':
-		s.AddToken(PLUS)
+		s.AddToken(token.PLUS)
 	case ';':
-		s.AddToken(SEMICOLON)
+		s.AddToken(token.SEMICOLON)
 	case '*':
-		s.AddToken(STAR)
+		s.AddToken(token.STAR)
 	case '!':
 		if s.Match('=') {
-			s.AddToken(BANG_EQUAL)
+			s.AddToken(token.BANG_EQUAL)
 		} else {
-			s.AddToken(BANG)
+			s.AddToken(token.BANG)
 		}
 	case '=':
 		if s.Match('=') {
-			s.AddToken(EQUAL_EQUAL)
+			s.AddToken(token.EQUAL_EQUAL)
 		} else {
-			s.AddToken(EQUAL)
+			s.AddToken(token.EQUAL)
 		}
 	case '<':
 		if s.Match('=') {
-			s.AddToken(LESS_EQUAL)
+			s.AddToken(token.LESS_EQUAL)
 		} else {
-			s.AddToken(LESS)
+			s.AddToken(token.LESS)
 		}
 	case '>':
 		if s.Match('=') {
-			s.AddToken(GREATER_EQUAL)
+			s.AddToken(token.GREATER_EQUAL)
 		} else {
-			s.AddToken(GREATER)
+			s.AddToken(token.GREATER)
 		}
 	case '/':
 		if s.Match('/') {
@@ -98,7 +99,7 @@ func (s *Scanner) ScanToken() {
 				s.Advance()
 			}
 		} else {
-			s.AddToken(SLASH)
+			s.AddToken(token.SLASH)
 		}
 	case ' ':
 	case '\r':
@@ -124,13 +125,13 @@ func (s *Scanner) Advance() byte {
 	return next
 }
 
-func (s *Scanner) AddToken(tokenType TokenType) {
+func (s *Scanner) AddToken(tokenType token.TokenType) {
 	s.AddTokenWithValue(tokenType, nil)
 }
 
-func (s *Scanner) AddTokenWithValue(tokenType TokenType, literal interface{}) {
+func (s *Scanner) AddTokenWithValue(tokenType token.TokenType, literal interface{}) {
 	text := s.Source[s.Start:s.Current]
-	s.Tokens = append(s.Tokens, Token{tokenType, text, literal, s.Line})
+	s.Tokens = append(s.Tokens, token.Token{tokenType, text, literal, s.Line})
 }
 
 func (s *Scanner) Match(expected byte) bool {
@@ -169,7 +170,7 @@ func (s *Scanner) ScanString() {
 	s.Advance()
 
 	value := s.Source[s.Start+1 : s.Current-1]
-	s.AddTokenWithValue(STRING, value)
+	s.AddTokenWithValue(token.STRING, value)
 }
 
 func (s *Scanner) ScanNumber() {
@@ -189,7 +190,7 @@ func (s *Scanner) ScanNumber() {
 		log.Fatalln(err)
 	}
 
-	s.AddTokenWithValue(NUMBER, float32(value))
+	s.AddTokenWithValue(token.NUMBER, float32(value))
 }
 
 func (s *Scanner) ScanIdentifier() {
@@ -198,9 +199,9 @@ func (s *Scanner) ScanIdentifier() {
 	}
 
 	text := s.Source[s.Start:s.Current]
-	tokenType, ok := keywords[text]
+	tokenType, ok := token.Keywords[text]
 	if !ok {
-		tokenType = IDENTIFIER
+		tokenType = token.IDENTIFIER
 	}
 	s.AddToken(tokenType)
 }

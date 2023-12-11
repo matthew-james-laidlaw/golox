@@ -1,11 +1,13 @@
 package lox
 
+import "golox/pkg/lox/ast"
+
 type Callable interface {
 	Call(i Interpreter, arguments []interface{}) interface{}
 }
 
 type LoxFunction struct {
-	Declaration *Function
+	Declaration *ast.Function
 }
 
 func (f *LoxFunction) Call(i Interpreter, arguments []interface{}) (returnValue interface{}) {

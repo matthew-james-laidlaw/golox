@@ -1,11 +1,15 @@
-package lox
+package ast
+
+import (
+	"golox/pkg/lox/token"
+)
 
 type Expression interface {
 	Accept(v Visitor) interface{}
 }
 
 type Assignment struct {
-	Name  Token
+	Name  token.Token
 	Value Expression
 }
 
@@ -14,7 +18,7 @@ func (expr Assignment) Accept(v Visitor) interface{} {
 }
 
 type Binary struct {
-	Operation Token
+	Operation token.Token
 	Left      Expression
 	Right     Expression
 }
@@ -55,7 +59,7 @@ func (expr Literal) Accept(v Visitor) interface{} {
 }
 
 type Logical struct {
-	Operation Token
+	Operation token.Token
 	Left      Expression
 	Right     Expression
 }
@@ -83,7 +87,7 @@ func (expr This) Accept(v Visitor) interface{} {
 }
 
 type Unary struct {
-	Operation Token
+	Operation token.Token
 	Operand   Expression
 }
 
@@ -92,7 +96,7 @@ func (expr Unary) Accept(v Visitor) interface{} {
 }
 
 type Variable struct {
-	Name Token
+	Name token.Token
 }
 
 func (expr Variable) Accept(v Visitor) interface{} {

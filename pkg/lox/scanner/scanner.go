@@ -1,10 +1,15 @@
-package lox
+package scanner
 
 import (
 	"golox/pkg/lox/token"
 	"log"
 	"strconv"
 )
+
+func Scan(source string) []token.Token {
+	scanner := NewScanner(source)
+	return scanner.ScanTokens()
+}
 
 type Scanner struct {
 	Source  string

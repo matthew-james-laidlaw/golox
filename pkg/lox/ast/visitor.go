@@ -13,7 +13,6 @@ type Visitor interface {
 	VisitThis(expr *This) interface{}
 	VisitUnary(expr *Unary) interface{}
 	VisitVariable(expr *Variable) interface{}
-
 	VisitBlock(stmt *Block) interface{}
 	VisitClass(stmt *Class) interface{}
 	VisitExpressionStatement(stmt *ExpressionStatement) interface{}

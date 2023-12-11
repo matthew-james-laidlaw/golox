@@ -1,6 +1,8 @@
-package lox
+package interpreter
 
-import "golox/pkg/lox/ast"
+import (
+	"golox/pkg/lox/ast"
+)
 
 type Callable interface {
 	Call(i Interpreter, arguments []interface{}) interface{}
